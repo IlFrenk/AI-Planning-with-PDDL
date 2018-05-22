@@ -8,7 +8,7 @@
         (on a b)
         (clear a)
         (clear c)
-        (arm-empty)
+        (free-arm)
     )
     (:goal
         (and

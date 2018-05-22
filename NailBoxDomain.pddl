@@ -4,7 +4,7 @@
     (:predicates
         (clear ?x)
         (on-table ?x)
-        (arm-empty)
+        (free-arm)
         (holding ?x)
         (on ?x ?y)
         (hammered ?x ?y ?z)
@@ -19,30 +19,30 @@
         :parameters (?object1)
 
         ;per poter fare la get-from-table è necessario che:
-            ;l'oggetto1 si possa prendere
-            ;l'oggetto1 sia sul tavolo
             ;il braccio sia libero
+            ;l'oggetto1 sia sul tavolo
+            ;l'oggetto1 si possa prendere
         :precondition (and
-                        (clear ?object1)
+                        (free-arm)
                         (on-table ?object1)
-                        (arm-empty)
+                        (clear ?object1)
                     )
 
         ;gli effetti della get-from-table sono:
-            ;il braccio diviene occupato, con l'oggetto1 che ha preso
-            ;l'oggetto1 non è più prendibile
+            ;il braccio diviene occupato, ha preso l'oggetto1
             ;l'oggetto1 non è più sul tavolo
+            ;l'oggetto1 non è più prendibile
             ;il braccio non è più libero
         :effect (and
                     (holding ?object1)
                     (not
-                        (clear ?object1)
-                    )
-                    (not
                         (on-table ?object1)
                     )
                     (not
-                        (arm-empty)
+                        (clear ?object1)
+                    )
+                    (not
+                        (free-arm)
                     )
                 )
     )
@@ -58,17 +58,17 @@
                     )
 
         ;gli effetti della put-on-table sono:
-            ;l'oggetto1 torna prendibile
-            ;il braccio torna libero
             ;l'oggetto1 torna sul tavolo
             ;il braccio non ha più in mano l'oggetto1
+            ;l'oggetto1 torna prendibile
+            ;il braccio torna libero
         :effect (and
-                    (clear ?object1)
-                    (arm-empty)
                     (on-table ?object1)
                     (not
                         (holding ?object1)
                     )
+                    (clear ?object1)
+                    (free-arm)
                 )
     )
 
@@ -76,29 +76,29 @@
         :parameters  (?object1 ?object2)
 
         ;la stack permette di impilare un oggetto sopra ad un altro. Per poterla fare è necessario che:
-            ;l'oggetto2 non abbia altri oggetti sopra (per potervi quindi impilare l'oggetto1)
             ;il braccio abbia in mano l'oggetto1
+            ;l'oggetto2 non abbia altri oggetti sopra (per potervi quindi impilare l'oggetto1)
         :precondition (and
-                        (clear ?object2)
                         (holding ?object1)
+                        (clear ?object2)
                     )
 
         ;gli effetti della stack sono:
             ;il braccio torna libero
-            ;l'oggetto1 torna prendibile
-            ;l'oggetto1 è impilato sull'oggetto2
             ;l'oggetto2 non è più prendibile
             ;il braccio non ha più in mano l'oggetto1
+            ;l'oggetto1 torna prendibile
+            ;l'oggetto1 è impilato sull'oggetto2
         :effect (and
-                    (arm-empty)
-                    (clear ?object1)
-                    (on ?object1 ?object2)
+                    (free-arm)
                     (not
                         (clear ?object2)
                     )
                     (not
                         (holding ?object1)
                     )
+                    (clear ?object1)
+                    (on ?object1 ?object2)
                 )
     )
 
@@ -107,29 +107,29 @@
 
         ;La unstack permette di prendere un oggetto che si trova impilato sopra ad un altro. Per poterla fare è necessario che:
             ;l'oggetto1 sia effettivamente impilato sopra l'oggetto2
-            ;l'oggetto1 sia prendibile
             ;il braccio sia libero
+            ;l'oggetto1 sia prendibile
         :precondition (and
                         (on ?object1 ?object2)
+                        (free-arm)
                         (clear ?object1)
-                        (arm-empty)
                     )
 
         ;gli effetti della stack sono:
-            ;il braccio ha in mano l'oggetto1
-            ;l'oggetto2 torna prendibile
             ;l'oggetto1 non è più impilato sull'oggetto2
             ;il braccio non è più libero
+            ;il braccio ha in mano l'oggetto1
+            ;l'oggetto2 torna prendibile
             ;l'oggetto1 non è più prendibile
         :effect (and
-                    (holding ?object1)
-                    (clear ?object2)
                     (not
                         (on ?object1 ?object2)
                     )
                     (not
-                        (arm-empty)
+                        (free-arm)
                     )
+                    (holding ?object1)
+                    (clear ?object2)
                     (not
                         (clear ?object1)
                     )
@@ -160,12 +160,12 @@
                             (clear ?object3)
                         )
                         (on-table ?object3)
-                        (arm-empty)
+                        (free-arm)
                     )
 
         ;gli effetti della hammering sono:
             ;l'oggetto1, l'oggetto2, l'oggetto3 d'ora in poi non saranno più prendibili separatamente
-            ;i 3 oggetti vengono trattati come un unico oggetto hammered (a tal proposito si veda le azioni successive)
+            ;i 3 oggetti vengono trattati come un unico oggetto hammered
         :effect (and
                     (hammered ?object1 ?object2 ?object3)
                     (not
