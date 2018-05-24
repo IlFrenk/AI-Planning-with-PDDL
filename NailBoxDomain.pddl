@@ -143,7 +143,7 @@
             ;l'oggetto1 sia prendibile e contemporaneamente non sul tavolo
             ;l'oggetto2 non sia sul tavolo
             ;l'oggetto2 e l'oggetto3 non siano prendibili
-            ;l'oggetto3 sia sul tavolo
+            ;i 3 oggetti siano diversi tra loro (in modo da evitare che avvenga la hammer con oggetti ripetuti)
             ;il braccio sia libero
         :precondition (and
                         (clear ?object1)
@@ -159,7 +159,15 @@
                         (not
                             (clear ?object3)
                         )
-                        (on-table ?object3)
+                        (not
+                            (= ?object1 ?object2)
+                        )
+                        (not
+                            (= ?object2 ?object3)
+                        )
+                        (not
+                            (= ?object1 ?object3)
+                        )
                         (free-arm)
                     )
 
